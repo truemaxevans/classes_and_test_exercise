@@ -1,5 +1,5 @@
 import unittest
-from main import BaseClass
+from main import BaseClass, Administrator, Volunteer
 
 class TestBaseClass(unittest.TestCase):
 
@@ -32,4 +32,27 @@ class TestBaseClass(unittest.TestCase):
     def test_validate_photo(self):
         self.base_class.validate_photo("photo.jpg")
         self.assertRaises(ValueError, self.base_class.validate_photo, "test.png")
-        self.assertRaises(ValueError, self.base_class.validate_photo, "not_exist.jpg")
+        self.assertRaises(FileNotFoundError, self.base_class.validate_photo, "not_exist.jpg")
+
+class TestAdministrator(unittest.TestCase):
+
+    def setUp(self):
+        self.admin = Administrator(
+            "Kostyukov", True, name="Vlad", birth_date="1995", email="a@gmail.com",
+            phone_number="371200000", address="Duntes 6a", photo="photo.jpg"
+            )
+
+    def test_add_photo_to_volunteer(self):
+        volunteer = Volunteer("Kostyukov", False, name="Boba")
+        self.admin.add_photo_to_volunteer(volunteer, "photo.jpg")
+        self.assertEqual(volunteer.photo, "photo.jpg")
+
+    def test_add_photo_to_volunteer_with_invalid_file(self):
+        volunteer = Volunteer("Kostyukov", False, name="Boba")
+        self.assertRaises(ValueError, self.admin.add_photo_to_volunteer, volunteer, "wrong_file.png")
+        self.assertFalse(hasattr(volunteer, "photo"))
+
+    def test_add_nonexisting_photo_to_volunteer(self):
+        volunteer = Volunteer("Kostyukov", False, name="Boba")
+        self.assertRaises(FileNotFoundError, self.admin.add_photo_to_volunteer, volunteer, "no_file.jpg")
+        self.assertFalse(hasattr(volunteer, "photo"))

@@ -10,6 +10,7 @@ log = logging.getLogger(__name__)
 
 
 class BaseClass:
+    """Base class for Administrator and Volunteer classes."""
     def __init__(
         self, surname:str, is_administrator:bool, name:str=None, birth_date:str=None, email:str=None,
         phone_number:str=None, address:str=None, photo:str=None
@@ -65,7 +66,7 @@ class BaseClass:
             if not photo.endswith('.jpg'):
                 raise ValueError("Photo should be only in jpg format.")
             if not os.path.exists(photo):
-                raise ValueError("Error: File does not exist.")
+                raise FileNotFoundError("File not found in the path: {}".format(photo))
             try:
                 with open(photo, "rb") as image_file:
                     self.photo = base64.b64encode(image_file.read()).decode()
@@ -85,6 +86,7 @@ class BaseClass:
 
 
 class Administrator(BaseClass):
+    """Administrator class."""
     def __init__(self, surname:str, is_administrator:bool, name:str=None, birth_date:str=None, email:str=None,
         phone_number:str=None, address:str=None, photo:str=None):
         super().__init__(surname, is_administrator, name, birth_date, email, phone_number,
@@ -92,9 +94,11 @@ class Administrator(BaseClass):
 
     def add_photo_to_volunteer(self, volunteer, photo):
         volunteer.validate_photo(photo)
+        volunteer.photo = photo
 
 
 class Volunteer(BaseClass):
+    """Volunteer class."""
     def __init__(self, surname:str, is_administrator:bool, name:str=None, birth_date:str=None, email:str=None,
         phone_number:str=None, address:str=None, photo:str=None, garbage_data=None):
         super().__init__(surname, is_administrator, name, birth_date, email, phone_number,
